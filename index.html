@@ -32,6 +32,8 @@
             #worksheet-container {
                 margin: 0;
                 padding: 0;
+                border: none;
+                box-shadow: none;
             }
             #worksheet {
                  /* 印刷時は画面用のスタイルをリセット */
@@ -39,6 +41,7 @@
                 border: none;
                 box-shadow: none;
                 margin: 0;
+                width: 100%;
                 height: auto;
             }
         }
@@ -46,10 +49,10 @@
         /* ワークシートコンテナのスタイル（画面表示用） */
         #worksheet-container {
             margin: 2rem auto;
-            padding: 2rem;
             background: white;
             width: 21cm; /* A4 width */
             min-height: 29.7cm; /* A4 height */
+            padding: 1.5cm; /* 内側の余白 */
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
             box-sizing: border-box;
         }
@@ -58,7 +61,9 @@
         #clocks-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 25px 20px; /* ギャップを調整 */
+            /* A4縦の比率を考慮し、行の高さを自動調整 */
+            grid-auto-rows: minmax(min-content, max-content);
+            gap: 20px 20px;
         }
         
         /* 各時計のコンテナ */
@@ -112,8 +117,8 @@
         <div id="worksheet-container">
             <div id="worksheet">
                 <header class="pb-4 mb-8">
-                    <h2 class="text-2xl font-bold text-center">とけいの もんだい</h2>
-                    <div class="text-xl font-normal mt-2">なまえ（　　　　　　　　　　）</div>
+                    <div class="text-xl font-normal">なまえ（　　　　　　　　　　）</div>
+                    <h2 class="text-lg font-normal text-gray-600 mt-1">とけいをよもう</h2>
                 </header>
                 <div id="clocks-grid">
                     <!-- JavaScriptによって時計がここに生成されます -->
@@ -171,8 +176,6 @@
             ctx.strokeStyle = '#333';
             ctx.lineWidth = radius * 0.025; // 縁の太さを調整
             ctx.stroke();
-
-            // 中心の点（削除済み）
 
             // 目盛りを描画
             for (let i = 0; i < 60; i++) {
