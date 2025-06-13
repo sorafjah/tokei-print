@@ -12,46 +12,45 @@
         /* 基本のフォント設定 */
         body {
             font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f3f4f6;
         }
 
         /* 印刷時のスタイル */
         @media print {
-            /* 印刷時に操作パネルとフッターを非表示にする */
+            /* 印刷時に不要な要素を非表示 */
             #control-panel, footer {
                 display: none;
+            }
+            body {
+                background-color: white;
             }
             /* 印刷用の用紙サイズと余白を調整 */
             @page {
                 size: A4;
                 margin: 15mm;
             }
-            body {
-                -webkit-print-color-adjust: exact; /* Chrome, Safari, Opera */
-                color-adjust: exact; /* Firefox */
-            }
             #worksheet-container {
-                border: none;
-                box-shadow: none;
                 margin: 0;
                 padding: 0;
             }
+            #worksheet {
+                 /* 印刷時は画面用のスタイルをリセット */
+                padding: 0;
+                border: none;
+                box-shadow: none;
+                margin: 0;
+                height: auto;
+            }
         }
 
-        /* アプリ全体のコンテナ */
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        /* ワークシートのスタイル */
-        #worksheet {
-            background: white;
-            padding: 1.5cm; /* パディングを調整 */
-            width: 21cm; /* A4 width */
-            height: 29.7cm; /* A4 height */
+        /* ワークシートコンテナのスタイル（画面表示用） */
+        #worksheet-container {
             margin: 2rem auto;
-            border: 1px solid #d1d5db;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 2rem;
+            background: white;
+            width: 21cm; /* A4 width */
+            min-height: 29.7cm; /* A4 height */
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
             box-sizing: border-box;
         }
 
@@ -60,7 +59,6 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 25px 20px; /* ギャップを調整 */
-            height: calc(100% - 60px); /* ヘッダーの高さを引く */
         }
         
         /* 各時計のコンテナ */
@@ -69,6 +67,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            padding-bottom: 10px; /* 解答欄とのスペース */
         }
 
         /* 解答欄のスタイル */
@@ -112,9 +111,9 @@
         <!-- 印刷されるワークシートエリア -->
         <div id="worksheet-container">
             <div id="worksheet">
-                <header class="flex justify-between items-center pb-4 mb-6">
-                    <h2 class="text-2xl font-bold">とけいの もんだい</h2>
-                    <div class="text-xl font-semibold">なまえ: (　　　　　　)</div>
+                <header class="pb-4 mb-8">
+                    <h2 class="text-2xl font-bold text-center">とけいの もんだい</h2>
+                    <div class="text-xl font-normal mt-2">なまえ（　　　　　　　　　　）</div>
                 </header>
                 <div id="clocks-grid">
                     <!-- JavaScriptによって時計がここに生成されます -->
@@ -130,13 +129,6 @@
     <script>
         const clocksGrid = document.getElementById('clocks-grid');
         const clockSize = 190; // 各時計のキャンバスサイズを調整
-
-        /**
-         * 0埋めして2桁の文字列を返す関数
-         * @param {number} num - 数値
-         * @returns {string} 2桁の文字列
-         */
-        const padZero = (num) => String(num).padStart(2, '0');
 
         /**
          * アナログ時計を描画する関数
@@ -180,11 +172,7 @@
             ctx.lineWidth = radius * 0.025; // 縁の太さを調整
             ctx.stroke();
 
-            // 中心の点
-            ctx.beginPath();
-            ctx.arc(0, 0, radius * 0.05, 0, 2 * Math.PI);
-            ctx.fillStyle = '#333';
-            ctx.fill();
+            // 中心の点（削除済み）
 
             // 目盛りを描画
             for (let i = 0; i < 60; i++) {
