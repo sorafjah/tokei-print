@@ -31,7 +31,7 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             grid-auto-rows: 1fr; /* 高さを均等に */
-            gap: 20px 20px;
+            gap: 15px 20px; /* ギャップを調整 */
             height: 100%;
         }
         
@@ -45,10 +45,17 @@
 
         /* 解答欄のスタイル */
         .answer-box {
-            font-size: 1.5rem;
+            font-size: 1.25rem; /* サイズを調整 */
             font-weight: normal;
-            margin-top: 10px;
-            letter-spacing: 2px;
+            margin-top: 8px; /* マージンを調整 */
+            letter-spacing: 1px;
+        }
+
+        #worksheet-header h2 {
+            font-size: 1.125rem; /* 18px */
+        }
+        #worksheet-header div {
+            font-size: 1rem; /* 16px */
         }
         
         /* --- 印刷専用スタイル --- */
@@ -88,14 +95,15 @@
                 width: 100%;
             }
 
-            #worksheet > header {
+            #worksheet-header {
                 flex-shrink: 0; /* ヘッダーが縮まないように */
-                margin-bottom: 20px;
+                margin-bottom: 15px; /* マージンを調整 */
             }
             
             /* グリッドが残りの高さをすべて使うように */
             #clocks-grid {
                 flex-grow: 1; 
+                gap: 10px 15px; /* 印刷時のギャップをさらに詰める */
             }
         }
     </style>
@@ -132,9 +140,9 @@
         <!-- 印刷されるワークシートエリア -->
         <div id="worksheet-container">
             <div id="worksheet">
-                <header class="pb-4">
-                    <div class="text-xl font-normal">なまえ（　　　　　　　　　　）</div>
-                    <h2 class="text-lg font-normal text-gray-600 mt-1">とけいをよもう</h2>
+                <header id="worksheet-header" class="pb-4">
+                    <div class="font-normal">なまえ（　　　　　　　　　　）</div>
+                    <h2 class="font-normal text-gray-600 mt-1">とけいをよもう</h2>
                 </header>
                 <div id="clocks-grid">
                     <!-- JavaScriptによって時計がここに生成されます -->
@@ -149,7 +157,7 @@
 
     <script>
         const clocksGrid = document.getElementById('clocks-grid');
-        const clockSize = 180; // サイズを微調整
+        const clockSize = 160; // サイズを調整して8問入るようにする
 
         /**
          * アナログ時計を描画する関数
