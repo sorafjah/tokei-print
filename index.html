@@ -15,55 +15,24 @@
             background-color: #f3f4f6;
         }
 
-        /* 印刷時のスタイル */
-        @media print {
-            /* 印刷時に不要な要素を非表示 */
-            #control-panel, footer {
-                display: none;
-            }
-            body {
-                background-color: white;
-            }
-            /* 印刷用の用紙サイズと余白を調整 */
-            @page {
-                size: A4;
-                margin: 15mm;
-            }
-            #worksheet-container {
-                margin: 0;
-                padding: 0;
-                border: none;
-                box-shadow: none;
-            }
-            #worksheet {
-                 /* 印刷時は画面用のスタイルをリセット */
-                padding: 0;
-                border: none;
-                box-shadow: none;
-                margin: 0;
-                width: 100%;
-                height: auto;
-            }
-        }
-
         /* ワークシートコンテナのスタイル（画面表示用） */
         #worksheet-container {
             margin: 2rem auto;
             background: white;
-            width: 21cm; /* A4 width */
-            min-height: 29.7cm; /* A4 height */
-            padding: 1.5cm; /* 内側の余白 */
+            width: 21cm;
+            min-height: 29.7cm;
+            padding: 1.5cm;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
             box-sizing: border-box;
         }
 
-         /* 時計が並ぶグリッドのスタイル */
+        /* 時計が並ぶグリッドのスタイル */
         #clocks-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            /* A4縦の比率を考慮し、行の高さを自動調整 */
-            grid-auto-rows: minmax(min-content, max-content);
+            grid-auto-rows: 1fr; /* 高さを均等に */
             gap: 20px 20px;
+            height: 100%;
         }
         
         /* 各時計のコンテナ */
@@ -72,15 +41,62 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding-bottom: 10px; /* 解答欄とのスペース */
         }
 
         /* 解答欄のスタイル */
         .answer-box {
-            font-size: 1.5rem; /* 24px */
-            font-weight: normal; /* 太さを通常に */
-            margin-top: 10px; /* マージンを調整 */
+            font-size: 1.5rem;
+            font-weight: normal;
+            margin-top: 10px;
             letter-spacing: 2px;
+        }
+        
+        /* --- 印刷専用スタイル --- */
+        @media print {
+            /* 印刷時に不要な要素を非表示 */
+            #control-panel, footer {
+                display: none;
+            }
+            
+            /* 印刷の基本設定 */
+            body {
+                background-color: white;
+                margin: 0;
+            }
+
+            @page {
+                size: A4;
+                margin: 15mm; /* 印刷の余白 */
+            }
+
+            /* ワークシートのコンテナを印刷用に調整 */
+            #worksheet-container {
+                width: 100%;
+                height: 100%;
+                min-height: 0;
+                margin: 0;
+                padding: 0;
+                border: none;
+                box-shadow: none;
+            }
+
+            /* ワークシート本体のレイアウトをFlexboxで制御 */
+            #worksheet {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                width: 100%;
+            }
+
+            #worksheet > header {
+                flex-shrink: 0; /* ヘッダーが縮まないように */
+                margin-bottom: 20px;
+            }
+            
+            /* グリッドが残りの高さをすべて使うように */
+            #clocks-grid {
+                flex-grow: 1; 
+            }
         }
     </style>
 </head>
@@ -116,7 +132,7 @@
         <!-- 印刷されるワークシートエリア -->
         <div id="worksheet-container">
             <div id="worksheet">
-                <header class="pb-4 mb-8">
+                <header class="pb-4">
                     <div class="text-xl font-normal">なまえ（　　　　　　　　　　）</div>
                     <h2 class="text-lg font-normal text-gray-600 mt-1">とけいをよもう</h2>
                 </header>
@@ -133,7 +149,7 @@
 
     <script>
         const clocksGrid = document.getElementById('clocks-grid');
-        const clockSize = 190; // 各時計のキャンバスサイズを調整
+        const clockSize = 180; // サイズを微調整
 
         /**
          * アナログ時計を描画する関数
