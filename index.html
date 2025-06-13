@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>時計のプリント作成</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* 基本のフォント設定 */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        /* 印刷時のスタイル */
+        @media print {
+            /* 印刷時に操作パネルとフッターを非表示にする */
+            #control-panel, footer {
+                display: none;
+            }
+            /* 印刷用の用紙サイズと余白を調整 */
+            @page {
+                size: A4;
+                margin: 15mm;
+            }
+            body {
+                -webkit-print-color-adjust: exact; /* Chrome, Safari, Opera */
+                color-adjust: exact; /* Firefox */
+            }
+            #worksheet-container {
+                border: none;
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+            }
+        }
+
+        /* アプリ全体のコンテナ */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* ワークシートのスタイル */
+        #worksheet {
+            background: white;
+            padding: 1.5cm; /* パディングを調整 */
+            width: 21cm; /* A4 width */
+            height: 29.7cm; /* A4 height */
+            margin: 2rem auto;
+            border: 1px solid #d1d5db;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+         /* 時計が並ぶグリッドのスタイル */
+        #clocks-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px 20px; /* ギャップを調整 */
+            height: calc(100% - 60px); /* ヘッダーの高さを引く */
+        }
+        
+        /* 各時計のコンテナ */
+        .clock-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 解答欄のスタイル */
+        .answer-box {
+            font-size: 1.5rem; /* 24px */
+            font-weight: normal; /* 太さを通常に */
+            margin-top: 10px; /* マージンを調整 */
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4">
+        
+        <!-- 操作パネル -->
+        <header id="control-panel" class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h1 class="text-2xl font-bold text-center mb-2">時計のプリント作成</h1>
+            <p class="text-center text-gray-600 mb-6">下のボタンから問題の種類を選んで、新しい問題を作成してください。</p>
+            
+            <!-- 問題の種類を選択するボタン -->
+            <div class="flex flex-wrap justify-center gap-3 mb-4">
+                <button onclick="generateProblems(0)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">ちょうど</button>
+                <button onclick="generateProblems(15)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">15分ごと</button>
+                <button onclick="generateProblems(10)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">10分ごと</button>
+                <button onclick="generateProblems(5)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">5分ごと</button>
+                <button onclick="generateProblems(1)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">1分ごと</button>
+            </div>
+
+            <!-- 印刷ボタン -->
+            <div class="text-center mt-6">
+                <button onclick="window.print()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors text-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    この問題を印刷する
+                </button>
+            </div>
+        </header>
+
+        <!-- 印刷されるワークシートエリア -->
+        <div id="worksheet-container">
+            <div id="worksheet">
+                <header class="flex justify-between items-center pb-4 mb-6">
+                    <h2 class="text-2xl font-bold">とけいの もんだい</h2>
+                    <div class="text-xl font-semibold">なまえ: (　　　　　　)</div>
+                </header>
+                <div id="clocks-grid">
+                    <!-- JavaScriptによって時計がここに生成されます -->
+                </div>
+            </div>
+        </div>
+
+        <footer class="text-center py-6 text-gray-500 text-sm">
+            <p>&copy; 2024 Clock Print Generator. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        const clocksGrid = document.getElementById('clocks-grid');
+        const clockSize = 190; // 各時計のキャンバスサイズを調整
+
+        /**
+         * 0埋めして2桁の文字列を返す関数
+         * @param {number} num - 数値
+         * @returns {string} 2桁の文字列
+         */
+        const padZero = (num) => String(num).padStart(2, '0');
+
+        /**
+         * アナログ時計を描画する関数
+         * @param {HTMLCanvasElement} canvas - 描画対象のキャンバス
+         * @param {number} hour - 時 (1-12)
+         * @param {number} minute - 分 (0-59)
+         */
+        function drawClock(canvas, hour, minute) {
+            const ctx = canvas.getContext('2d');
+            const radius = canvas.height / 2;
+            ctx.translate(radius, radius);
+            const drawRadius = radius * 0.90;
+
+            // 描画をクリア
+            ctx.clearRect(-radius, -radius, canvas.width, canvas.height);
+
+            // 時計盤を描画
+            drawFace(ctx, drawRadius);
+            // 数字を描画
+            drawNumbers(ctx, drawRadius);
+            // 針を描画
+            drawHands(ctx, drawRadius, hour, minute);
+
+            ctx.translate(-radius, -radius);
+        }
+
+        /**
+         * 時計の盤面を描画する
+         * @param {CanvasRenderingContext2D} ctx - 描画コンテキスト
+         * @param {number} radius - 半径
+         */
+        function drawFace(ctx, radius) {
+            // 外側の円
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+
+            // 縁
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = radius * 0.025; // 縁の太さを調整
+            ctx.stroke();
+
+            // 中心の点
+            ctx.beginPath();
+            ctx.arc(0, 0, radius * 0.05, 0, 2 * Math.PI);
+            ctx.fillStyle = '#333';
+            ctx.fill();
+
+            // 目盛りを描画
+            for (let i = 0; i < 60; i++) {
+                const angle = (i / 60) * 2 * Math.PI;
+                ctx.beginPath();
+                ctx.lineWidth = (i % 5 === 0) ? 2 : 1; // 5分ごとの目盛りを太くする
+                const startRadius = radius * 0.9;
+                const endRadius = radius;
+                ctx.moveTo(startRadius * Math.sin(angle), -startRadius * Math.cos(angle));
+                ctx.lineTo(endRadius * Math.sin(angle), -endRadius * Math.cos(angle));
+                ctx.stroke();
+            }
+        }
+
+        /**
+         * 時計の数字を描画する
+         * @param {CanvasRenderingContext2D} ctx - 描画コンテキスト
+         * @param {number} radius - 半径
+         */
+        function drawNumbers(ctx, radius) {
+            ctx.font = radius * 0.22 + "px 'Noto Sans JP'"; // 数字のサイズを大きく
+            ctx.textBaseline = "middle";
+            ctx.textAlign = "center";
+            ctx.fillStyle = '#333';
+            for (let num = 1; num <= 12; num++) {
+                const angle = num * Math.PI / 6;
+                const x = radius * 0.75 * Math.sin(angle);
+                const y = -radius * 0.75 * Math.cos(angle);
+                ctx.fillText(num.toString(), x, y);
+            }
+        }
+        
+        /**
+         * 時計の針を描画する
+         * @param {CanvasRenderingContext2D} ctx - 描画コンテキスト
+         * @param {number} radius - 半径
+         * @param {number} hour - 時
+         * @param {number} minute - 分
+         */
+        function drawHands(ctx, radius, hour, minute) {
+            // 時針
+            let hourAngle = (hour % 12 + minute / 60) * (Math.PI / 6);
+            drawHand(ctx, hourAngle, radius * 0.5, radius * 0.07, '#333');
+            
+            // 分針
+            let minuteAngle = minute * (Math.PI / 30);
+            drawHand(ctx, minuteAngle, radius * 0.8, radius * 0.05, '#333');
+        }
+
+        /**
+         * 1本の針を描画するヘルパー関数
+         * @param {CanvasRenderingContext2D} ctx - 描画コンテキスト
+         * @param {number} angle - 角度
+         * @param {number} length - 長さ
+         * @param {number} width - 太さ
+         * @param {string} color - 色
+         */
+        function drawHand(ctx, angle, length, width, color) {
+            ctx.beginPath();
+            ctx.lineWidth = width;
+            ctx.lineCap = "round";
+            ctx.strokeStyle = color;
+            ctx.moveTo(0, 0);
+            ctx.rotate(angle);
+            ctx.lineTo(0, -length);
+            ctx.stroke();
+            ctx.rotate(-angle);
+        }
+
+        /**
+         * 指定された間隔でランダムな時刻を生成する
+         * @param {number} interval - 分の間隔 (0は「ちょうど」)
+         */
+        function generateProblems(interval) {
+            clocksGrid.innerHTML = ''; // グリッドをクリア
+            const usedTimes = new Set(); // 同じ時間が出ないように管理
+
+            for (let i = 0; i < 8; i++) {
+                let hour, minute;
+                
+                // 重複しない時刻を生成
+                do {
+                    hour = Math.floor(Math.random() * 12) + 1;
+                    if (interval === 0) { // ちょうど
+                        minute = 0;
+                    } else if (interval === 1) { // 1分ごと
+                        minute = Math.floor(Math.random() * 60);
+                    } else { // 5, 10, 15分ごと
+                        const steps = 60 / interval;
+                        minute = Math.floor(Math.random() * steps) * interval;
+                    }
+                } while (usedTimes.has(`${hour}:${minute}`));
+
+                usedTimes.add(`${hour}:${minute}`);
+
+                // DOM要素を作成
+                const clockItem = document.createElement('div');
+                clockItem.className = 'clock-item';
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = clockSize;
+                canvas.height = clockSize;
+                
+                const answerBox = document.createElement('div');
+                answerBox.className = 'answer-box';
+                // コロンを削除し、スペースで調整
+                answerBox.innerHTML = `<span>( &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; )</span>`; 
+                
+                clockItem.appendChild(canvas);
+                clockItem.appendChild(answerBox);
+                clocksGrid.appendChild(clockItem);
+
+                // 時計を描画
+                drawClock(canvas, hour, minute);
+            }
+        }
+
+        // 初期表示として「ちょうど」の問題を生成
+        window.onload = () => {
+            generateProblems(0);
+        };
+    </script>
+</body>
+</html>
