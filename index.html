@@ -78,9 +78,8 @@
             display: block;
         }
 
-        /* --- 変更点：解答表示ボタンのアクティブ状態 --- */
         #toggle-answer-btn.active {
-            background-color: #2563eb; /* A darker blue */
+            background-color: #15803d; /* A darker green */
             color: white;
         }
         
@@ -160,25 +159,24 @@
                 <button onclick="generateProblems({ interval: 1 })" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">1分ごと</button>
             </div>
             
-            <!-- 変更点：解答表示と印刷ボタンを横並びに配置 -->
+            <!-- Action buttons -->
             <div class="flex justify-center gap-4 mt-8">
-                <button id="toggle-answer-btn" class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded-lg shadow transition-colors">
-                    解答を表示
+                <button id="toggle-answer-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors">
+                    正解を表示
                 </button>
+                <!-- 変更点：「印刷する」にテキスト変更、アイコン削除 -->
                 <button onclick="window.print()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                    </svg>
-                    この問題を印刷する
+                    印刷する
                 </button>
             </div>
 
-            <!-- 変更点：共有機能を「実際のURL」形式に戻し、レイアウト調整 -->
+            <!-- Sharing feature panel -->
             <div id="share-panel" class="mt-8 text-left" style="display: none;">
-                 <label for="share-url" class="block text-sm font-medium text-gray-700 mb-1">この問題セットを共有・保存するURL</label>
+                 <!-- 変更点：ラベルのテキストを変更 -->
+                 <label for="share-url" class="block text-sm font-medium text-gray-700 mb-1">URLをコピペすると同じ問題を表示できます</label>
                  <div class="flex">
-                     <input type="text" id="share-url" readonly class="w-full bg-gray-100 border border-gray-300 rounded-l-md px-3 py-1.5 text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                     <button id="copy-url-button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1.5 px-4 rounded-r-md transition-colors">コピー</button>
+                     <input type="text" id="share-url" readonly class="w-full bg-gray-100 border border-gray-300 rounded-l-md px-3 py-1 text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                     <button id="copy-url-button" class="whitespace-nowrap bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-4 rounded-r-md transition-colors">コピー</button>
                  </div>
                  <p id="copy-feedback" class="text-sm text-green-600 mt-1 h-5 whitespace-nowrap"></p>
             </div>
@@ -188,9 +186,10 @@
         <!-- Printable worksheet area -->
         <div id="worksheet-container">
             <div id="worksheet">
+                <!-- 変更点：ヘッダー内の要素の順序を変更 -->
                 <header id="worksheet-header" class="pb-4">
-                    <div class="font-normal">なまえ（　　　　　　　　　　　　　　）</div>
-                    <h2 class="font-normal text-gray-600 mt-1">とけいをよもう</h2>
+                    <h2 class="font-normal text-gray-600">とけいをよもう</h2>
+                    <div class="font-normal mt-2">なまえ（　　　　　　　　　　　　　　）</div>
                 </header>
                 <div id="clocks-grid">
                     <!-- Clocks will be generated here by JavaScript -->
@@ -198,8 +197,8 @@
             </div>
         </div>
 
+        <!-- 変更点：フッターのコピーライト表記を削除 -->
         <footer class="text-center py-6 text-gray-500 text-sm">
-            <p>&copy; 2024 Clock Print Generator. All Rights Reserved.</p>
         </footer>
     </div>
 
@@ -207,14 +206,14 @@
         // DOM element references
         const clocksGrid = document.getElementById('clocks-grid');
         const worksheetContainer = document.getElementById('worksheet-container');
-        const toggleAnswerBtn = document.getElementById('toggle-answer-btn'); // 変更点
+        const toggleAnswerBtn = document.getElementById('toggle-answer-btn'); 
         const sharePanel = document.getElementById('share-panel');
-        const shareUrlInput = document.getElementById('share-url'); // 変更点
-        const copyUrlButton = document.getElementById('copy-url-button'); // 変更点
+        const shareUrlInput = document.getElementById('share-url'); 
+        const copyUrlButton = document.getElementById('copy-url-button'); 
         const copyFeedback = document.getElementById('copy-feedback');
         
         const clockSize = 160;
-        let answersVisible = false; // 変更点：解答の表示状態を管理
+        let answersVisible = false;
 
         /**
          * Draws an analog clock.
@@ -354,7 +353,6 @@
             const params = new URLSearchParams();
             params.set('times', timesString);
             
-            // 変更点: location.originとlocation.pathnameを使い、より安定したURLを生成
             const baseUrl = location.origin + location.pathname;
             const fullUrl = `${baseUrl}?${params.toString()}`;
             
@@ -363,15 +361,14 @@
             copyFeedback.textContent = '';
         }
 
-        // 変更点：解答表示ボタンのイベントリスナー
         toggleAnswerBtn.addEventListener('click', () => {
-            answersVisible = !answersVisible; // 状態を反転
+            answersVisible = !answersVisible; // Toggle state
             worksheetContainer.classList.toggle('show-answers', answersVisible);
             toggleAnswerBtn.classList.toggle('active', answersVisible);
-            toggleAnswerBtn.textContent = answersVisible ? '解答を隠す' : '解答を表示';
+            toggleAnswerBtn.textContent = answersVisible ? '正解を隠す' : '正解を表示';
         });
 
-        // 変更点：URLコピーボタンのイベントリスナー
+        // URL copy button event listener
         copyUrlButton.addEventListener('click', () => {
             const textToCopy = shareUrlInput.value;
             if (navigator.clipboard && window.isSecureContext) {
@@ -395,7 +392,6 @@
 
         // Actions on page load
         window.onload = () => {
-            // URLからパラメータを読み込んで問題を復元
             const urlParams = new URLSearchParams(window.location.search);
             const timesParam = urlParams.get('times');
 
@@ -418,7 +414,6 @@
                 }
             }
             
-            // パラメータがなければデフォルトの問題を生成
             generateProblems({ interval: 0 });
         };
     </script>
