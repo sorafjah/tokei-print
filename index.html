@@ -24,15 +24,23 @@
             padding: 1.5cm;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
             box-sizing: border-box;
+            display: flex; /* Added for alignment */
+            flex-direction: column; /* Added for alignment */
+        }
+
+        #worksheet {
+             display: flex;
+             flex-direction: column;
+             height: 100%;
         }
 
         /* Styles for the grid of clocks */
         #clocks-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            grid-auto-rows: 1fr; /* Equal height */
-            gap: 15px 20px; /* Adjust gap */
-            height: 100%;
+            flex-grow: 1; /* Take up available space */
+            /* 変更点：行の高さを自動調整し、問題間の上下の間隔を広げました */
+            gap: 40px 20px;
         }
         
         /* Container for each clock */
@@ -47,7 +55,8 @@
         .answer-box {
             font-size: 1.25rem; /* Adjust size */
             font-weight: normal;
-            margin-top: 8px; /* Adjust margin */
+            /* 変更点：時計との間隔を狭くしました */
+            margin-top: 4px;
             letter-spacing: 1px;
             height: 2.5rem; /* Ensure height for answer display area */
             display: flex;
@@ -55,6 +64,10 @@
             justify-content: center;
         }
 
+        #worksheet-header {
+            flex-shrink: 0; /* Prevent header from shrinking */
+            padding-bottom: 15px; /* Consistent padding */
+        }
         #worksheet-header h2 {
             font-size: 1.125rem; /* 18px */
         }
@@ -121,14 +134,13 @@
             }
 
             #worksheet-header {
-                flex-shrink: 0; /* Prevent header from shrinking */
                 margin-bottom: 15px; /* Adjust margin */
             }
             
             /* Make the grid use all remaining height */
             #clocks-grid {
-                flex-grow: 1; 
-                gap: 10px 15px; /* Reduce gap for printing */
+                /* 変更点：印刷時の問題間のスペースを調整しました */
+                gap: 30px 15px;
             }
 
             /* Reflect answer visibility in print */
@@ -164,7 +176,6 @@
                 <button id="toggle-answer-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors">
                     正解を表示
                 </button>
-                <!-- 変更点：「印刷する」にテキスト変更、アイコン削除 -->
                 <button onclick="window.print()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow transition-colors">
                     印刷する
                 </button>
@@ -172,7 +183,6 @@
 
             <!-- Sharing feature panel -->
             <div id="share-panel" class="mt-8 text-left" style="display: none;">
-                 <!-- 変更点：ラベルのテキストを変更 -->
                  <label for="share-url" class="block text-sm font-medium text-gray-700 mb-1">URLをコピペすると同じ問題を表示できます</label>
                  <div class="flex">
                      <input type="text" id="share-url" readonly class="w-full bg-gray-100 border border-gray-300 rounded-l-md px-3 py-1 text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500">
@@ -186,8 +196,7 @@
         <!-- Printable worksheet area -->
         <div id="worksheet-container">
             <div id="worksheet">
-                <!-- 変更点：ヘッダー内の要素の順序を変更 -->
-                <header id="worksheet-header" class="pb-4">
+                <header id="worksheet-header">
                     <h2 class="font-normal text-gray-600">とけいをよもう</h2>
                     <div class="font-normal mt-2">なまえ（　　　　　　　　　　　　　　）</div>
                 </header>
@@ -197,7 +206,6 @@
             </div>
         </div>
 
-        <!-- 変更点：フッターのコピーライト表記を削除 -->
         <footer class="text-center py-6 text-gray-500 text-sm">
         </footer>
     </div>
