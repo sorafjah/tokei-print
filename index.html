@@ -24,8 +24,8 @@
             padding: 1.5cm;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
             box-sizing: border-box;
-            display: flex; /* Added for alignment */
-            flex-direction: column; /* Added for alignment */
+            display: flex;
+            flex-direction: column;
         }
 
         #worksheet {
@@ -38,9 +38,9 @@
         #clocks-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            flex-grow: 1; /* Take up available space */
-            /* 変更点：行の高さを自動調整し、問題間の上下の間隔を広げました */
-            gap: 40px 20px;
+            flex-grow: 1; 
+            /* 変更点：画面表示での問題間のスペースを広げました */
+            gap: 50px 20px;
         }
         
         /* Container for each clock */
@@ -55,8 +55,8 @@
         .answer-box {
             font-size: 1.25rem; /* Adjust size */
             font-weight: normal;
-            /* 変更点：時計との間隔を狭くしました */
-            margin-top: 4px;
+            /* 変更点：時計との間隔をさらに狭くしました */
+            margin-top: 2px;
             letter-spacing: 1px;
             height: 2.5rem; /* Ensure height for answer display area */
             display: flex;
@@ -65,8 +65,8 @@
         }
 
         #worksheet-header {
-            flex-shrink: 0; /* Prevent header from shrinking */
-            padding-bottom: 15px; /* Consistent padding */
+            flex-shrink: 0; 
+            padding-bottom: 15px;
         }
         #worksheet-header h2 {
             font-size: 1.125rem; /* 18px */
@@ -83,7 +83,6 @@
             color: #c93756; /* Red-ish color */
         }
 
-        /* When the show-answers flag is set, hide the handwriting box and show the answer */
         #worksheet-container.show-answers .handwriting-box {
             display: none;
         }
@@ -98,12 +97,10 @@
         
         /* --- Print-only styles --- */
         @media print {
-            /* Hide unnecessary elements during printing */
             #control-panel, footer {
                 display: none;
             }
             
-            /* Basic print settings */
             body {
                 background-color: white;
                 margin: 0;
@@ -114,7 +111,6 @@
                 margin: 15mm; /* Print margins */
             }
 
-            /* Adjust the worksheet container for printing */
             #worksheet-container {
                 width: 100%;
                 height: 100%;
@@ -125,7 +121,6 @@
                 box-shadow: none;
             }
 
-            /* Control worksheet layout with Flexbox */
             #worksheet {
                 display: flex;
                 flex-direction: column;
@@ -137,13 +132,18 @@
                 margin-bottom: 15px; /* Adjust margin */
             }
             
-            /* Make the grid use all remaining height */
+            /* 変更点：印刷時のレイアウトを厳密に制御する */
             #clocks-grid {
-                /* 変更点：印刷時の問題間のスペースを調整しました */
-                gap: 30px 15px;
+                flex-grow: 1; /* ヘッダーを除いた残りの高さを全て使う */
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                /* 4つの行を均等な高さで作成し、はみ出しを防ぐ */
+                grid-template-rows: repeat(4, 1fr);
+                /* gapは行の均等分割で確保されるため、ここでは不要 */
+                gap: 0 15px;
+                align-items: center; /* 各問題の縦位置を中央に揃える */
             }
 
-            /* Reflect answer visibility in print */
             #worksheet-container.show-answers .handwriting-box {
                 display: none !important;
             }
@@ -162,7 +162,6 @@
             <h1 class="text-2xl font-bold text-center mb-2">時計のプリント作成</h1>
             <p class="text-center text-gray-600 mb-6">下のボタンから問題の種類を選んで、新しい問題を作成してください。</p>
             
-            <!-- Buttons to select problem type -->
             <div class="flex flex-wrap justify-center gap-3 mb-4">
                 <button onclick="generateProblems({ interval: 0 })" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">ちょうど</button>
                 <button onclick="generateProblems({ interval: 15 })" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">15分ごと</button>
@@ -171,7 +170,6 @@
                 <button onclick="generateProblems({ interval: 1 })" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">1分ごと</button>
             </div>
             
-            <!-- Action buttons -->
             <div class="flex justify-center gap-4 mt-8">
                 <button id="toggle-answer-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors">
                     正解を表示
@@ -181,7 +179,6 @@
                 </button>
             </div>
 
-            <!-- Sharing feature panel -->
             <div id="share-panel" class="mt-8 text-left" style="display: none;">
                  <label for="share-url" class="block text-sm font-medium text-gray-700 mb-1">URLをコピペすると同じ問題を表示できます</label>
                  <div class="flex">
@@ -190,7 +187,6 @@
                  </div>
                  <p id="copy-feedback" class="text-sm text-green-600 mt-1 h-5 whitespace-nowrap"></p>
             </div>
-
         </header>
 
         <!-- Printable worksheet area -->
@@ -223,9 +219,6 @@
         const clockSize = 160;
         let answersVisible = false;
 
-        /**
-         * Draws an analog clock.
-         */
         function drawClock(canvas, hour, minute) {
             const ctx = canvas.getContext('2d');
             const radius = canvas.height / 2;
@@ -238,9 +231,6 @@
             ctx.translate(-radius, -radius);
         }
 
-        /**
-         * Draws the clock face.
-         */
         function drawFace(ctx, radius) {
             ctx.beginPath();
             ctx.arc(0, 0, radius, 0, 2 * Math.PI);
@@ -261,9 +251,6 @@
             }
         }
 
-        /**
-         * Draws the numbers on the clock.
-         */
         function drawNumbers(ctx, radius) {
             ctx.font = radius * 0.22 + "px 'Noto Sans JP'";
             ctx.textBaseline = "middle";
@@ -277,9 +264,6 @@
             }
         }
         
-        /**
-         * Draws the clock hands.
-         */
         function drawHands(ctx, radius, hour, minute) {
             let hourAngle = (hour % 12 + minute / 60) * (Math.PI / 6);
             drawHand(ctx, hourAngle, radius * 0.5, radius * 0.07, '#333');
@@ -287,9 +271,6 @@
             drawHand(ctx, minuteAngle, radius * 0.8, radius * 0.05, '#333');
         }
 
-        /**
-         * Helper function to draw a single hand.
-         */
         function drawHand(ctx, angle, length, width, color) {
             ctx.beginPath();
             ctx.lineWidth = width;
@@ -302,11 +283,8 @@
             ctx.rotate(-angle);
         }
 
-        /**
-         * Generates problems based on specified options.
-         */
         function generateProblems({ interval, fixedTimes = null }) {
-            clocksGrid.innerHTML = ''; // Clear the grid
+            clocksGrid.innerHTML = ''; 
             const timesData = []; 
             const usedTimes = new Set(); 
 
@@ -353,9 +331,6 @@
             updateShareUrl(timesData);
         }
 
-        /**
-         * Generates and displays the shareable URL.
-         */
         function updateShareUrl(timesData) {
             const timesString = timesData.map(t => `${t.h}-${t.m}`).join(',');
             const params = new URLSearchParams();
@@ -370,13 +345,12 @@
         }
 
         toggleAnswerBtn.addEventListener('click', () => {
-            answersVisible = !answersVisible; // Toggle state
+            answersVisible = !answersVisible; 
             worksheetContainer.classList.toggle('show-answers', answersVisible);
             toggleAnswerBtn.classList.toggle('active', answersVisible);
             toggleAnswerBtn.textContent = answersVisible ? '正解を隠す' : '正解を表示';
         });
 
-        // URL copy button event listener
         copyUrlButton.addEventListener('click', () => {
             const textToCopy = shareUrlInput.value;
             if (navigator.clipboard && window.isSecureContext) {
@@ -398,7 +372,6 @@
             }
         });
 
-        // Actions on page load
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
             const timesParam = urlParams.get('times');
